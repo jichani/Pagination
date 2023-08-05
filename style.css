@@ -74,3 +74,12 @@ body,
   color: #fff;
   background: red;
 }
+
+.links-group.active {
+  display: flex;
+}
+
+/* CSS 추가 */
+.links-group:not(.active) {
+  display: none;
+}

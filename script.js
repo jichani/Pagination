@@ -9,32 +9,31 @@ let currentStep = 0;
 
 // Function to update the button states
 const updateBtn = () => {
-  // If we are at the last step
-  if (currentStep === 4) {
-    endBtn.disabled = true;
-    prevNext[1].disabled = true;
-  } else if (currentStep === 0) {
-    // If we are at the first step
-    startBtn.disabled = true;
-    prevNext[0].disabled = true;
-  } else {
-    endBtn.disabled = false;
-    prevNext[1].disabled = false;
-    startBtn.disabled = false;
-    prevNext[0].disabled = false;
-  }
+  startBtn.disabled = currentStep === 0;
+  endBtn.disabled = currentStep === 8;
+  prevNext[0].disabled = currentStep === 0;
+  prevNext[1].disabled = currentStep === 8;
 };
 
-// Add event listeners to the number links
+// Function to show the current group of number links
+const showCurrentGroup = () => {
+  const groupIndex = Math.floor(currentStep / 3); // 3개의 링크가 한 그룹이 됨
+  document.querySelectorAll(".links-group").forEach((group, index) => {
+    group.classList.toggle("active", index === groupIndex);
+  });
+};
+
+// Add event listener to the number links
 numbers.forEach((number, numIndex) => {
   number.addEventListener("click", (e) => {
     e.preventDefault();
     // Set the current step to the clicked number link
     currentStep = numIndex;
-    // Remove the "active" class from the previously active number link
-    document.querySelector(".active").classList.remove("active");
-    // Add the "active" class to the clicked number link
-    number.classList.add("active");
+    numbers.forEach((number, numIndex) => {
+      // Toggle the "active" class on the number links based on the current step
+      number.classList.toggle("active", numIndex === currentStep);
+    });
+    showCurrentGroup(); // Show the current group of number links
     updateBtn(); // Update the button states
   });
 });
@@ -44,34 +43,36 @@ prevNext.forEach((button) => {
   button.addEventListener("click", (e) => {
     // Increment or decrement the current step based on the button clicked
     currentStep += e.target.id === "next" ? 1 : -1;
+    currentStep = Math.max(0, Math.min(8, currentStep)); // 최소 0, 최대 8로 제한
     numbers.forEach((number, numIndex) => {
       // Toggle the "active" class on the number links based on the current step
       number.classList.toggle("active", numIndex === currentStep);
-      updateBtn(); // Update the button states
     });
+    showCurrentGroup(); // Show the current group of number links
+    updateBtn(); // Update the button states
   });
 });
 
 // Add event listener to the "Start" button
 startBtn.addEventListener("click", () => {
-  // Remove the "active" class from the previously active number link
-  document.querySelector(".active").classList.remove("active");
-  // Add the "active" class to the first number link
-  numbers[0].classList.add("active");
+  // Set the current step to the first step
   currentStep = 0;
+  numbers.forEach((number, numIndex) => {
+    // Toggle the "active" class on the number links based on the current step
+    number.classList.toggle("active", numIndex === currentStep);
+  });
+  showCurrentGroup(); // Show the current group of number links
   updateBtn(); // Update the button states
-  endBtn.disabled = false;
-  prevNext[1].disabled = false;
 });
 
 // Add event listener to the "End" button
 endBtn.addEventListener("click", () => {
-  // Remove the "active" class from the previously active number link
-  document.querySelector(".active").classList.remove("active");
-  // Add the "active" class to the last number link
-  numbers[4].classList.add("active");
-  currentStep = 4;
+  // Set the current step to the last step
+  currentStep = 8;
+  numbers.forEach((number, numIndex) => {
+    // Toggle the "active" class on the number links based on the current step
+    number.classList.toggle("active", numIndex === currentStep);
+  });
+  showCurrentGroup(); // Show the current group of number links
   updateBtn(); // Update the button states
-  startBtn.disabled = false;
-  prevNext[0].disabled = false;
 });
